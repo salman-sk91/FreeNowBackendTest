@@ -23,18 +23,19 @@ public class CommentsTest extends BaseAPI {
 
     @Test(priority = 1)
     public void search_and_verify_user() {
-
+        Log.info("Searching for the user");
         Response response = new RestCaller().doGet(EndPoints.baseURI + EndPoints.users, null);
         List<Object> userList = Util.getJsonValue(response, Constants.jsonPath_username.replaceAll("#userName", (String) getProperty("username")));
         Assert.assertTrue(userList.size() != 0, "No User Found with username: " + getProperty("username"));
         Assert.assertEquals(response.statusCode(), 200);
         data.addDataMap("userId", userList.get(0));
+        Log.info("Verified the user");
 
     }
 
     @Test(dependsOnMethods = {"search_and_verify_user"}, priority = 2)
     public void verify_post_on_users_blog() {
-
+        Log.info("Verifying the post on Users blog");
         Response response = new RestCaller().doGet(EndPoints.baseURI + EndPoints.posts, data.dataMap);
         PostsPOJO[] postArry = response.as(PostsPOJO[].class);
         for (PostsPOJO post : postArry) {
@@ -45,12 +46,13 @@ public class CommentsTest extends BaseAPI {
 
         Assert.assertTrue(postArry.length != 0, "No Post found for UserId " + data.getDataMap("userId"));
         Assert.assertEquals(response.statusCode(), 200);
+        Log.info("Verified the post on Users blog");
 
     }
 
     @Test(dependsOnMethods = {"verify_post_on_users_blog"}, priority = 3)
     public void verify_email_in_comments() {
-
+        Log.info("Verifying email on comments");
         for (Object postid : data.dataList) {
             Response response = new RestCaller().doGet(EndPoints.baseURI + EndPoints.comments, Map.of("postId", postid));
             CommentsPOJO[] CommentArry = response.as(CommentsPOJO[].class);
@@ -60,5 +62,6 @@ public class CommentsTest extends BaseAPI {
                 Assert.assertTrue(Util.validateEmail(post.getEmail()), "Invalid email found: " + post.getEmail());
             }
         }
+        Log.info("Verified email on comments");
     }
 }
