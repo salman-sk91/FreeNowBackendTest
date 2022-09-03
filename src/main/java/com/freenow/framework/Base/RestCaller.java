@@ -1,32 +1,27 @@
 package com.freenow.framework.Base;
 
-import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import static io.restassured.RestAssured.given;
 
 public class RestCaller {
 
-    public Response doGet(String URI) {
-
-        Response response = given().header("Content-Type", "application/json").
-                when().get(URI).
-                then().extract().response();
-
+    public Response doGet(String URI, Map<String,Object> params) {
+        Response response;
+        if(params!=null) {
+             response = given().header("Content-Type", "application/json").
+                    queryParams(params).
+                    when().get(URI).
+                    then().extract().response();
+        }else {
+             response = given().header("Content-Type", "application/json").
+                    when().get(URI).
+                    then().extract().response();
+        }
         return response;
-
-    }
-
-    public <T> List<T> doGetPOJO(String URI, Class pojoClass) {
-
-        JsonPath response = given().header("Content-Type", "application/json").
-                when().get(URI).
-                then().extract().response().getBody().jsonPath();
-
-        List<T> responsePOJO =  response.getList("$",pojoClass);
-        return responsePOJO;
 
     }
 

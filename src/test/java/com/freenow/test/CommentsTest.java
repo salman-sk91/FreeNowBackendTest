@@ -1,74 +1,64 @@
 package com.freenow.test;
 
+import com.freenow.framework.Base.BaseAPI;
 import com.freenow.framework.Base.EndPoints;
 import com.freenow.framework.Base.RestCaller;
+import com.freenow.framework.Utility.Constants;
 import com.freenow.framework.Utility.Util;
 import com.freenow.responsePOJO.CommentsPOJO;
 import com.freenow.responsePOJO.PostsPOJO;
-import com.jayway.jsonpath.JsonPath;
 import io.restassured.response.Response;
-import org.apache.commons.validator.routines.EmailValidator;
 import org.testng.Assert;
-
 import org.testng.annotations.Test;
 
+import java.util.List;
+import java.util.Map;
 
-import java.util.*;
 
-public class CommentsTest {
+public class CommentsTest extends BaseAPI {
 
-    HashMap<String, Object> user = new HashMap<>();
-    PostsPOJO[] postArry;
-    CommentsPOJO[] CommentArry;
-    List<Integer> postId = new ArrayList<>();
-    List<String> emails = new ArrayList<>();
 
-    private final String jsonPath_username = "$.[?(@.username=='Samantha')].id";
+    LocalDataContainer data = new LocalDataContainer();
+
 
     @Test(priority = 1)
-    public void searchUser() {
+    public void search_and_verify_user() {
 
-        Response response = new RestCaller().doGet(EndPoints.baseURI + EndPoints.users);
-        List<Object> userList = Util.getJsonValue(response, jsonPath_username);
-        user.put("userId", userList.get(0));
-        Assert.assertTrue(userList.size() != 0);
+        Response response = new RestCaller().doGet(EndPoints.baseURI + EndPoints.users, null);
+        List<Object> userList = Util.getJsonValue(response, Constants.jsonPath_username.replaceAll("#userName", (String) getProperty("username")));
+        Assert.assertTrue(userList.size() != 0, "No User Found with username: " + getProperty("username"));
         Assert.assertEquals(response.statusCode(), 200);
+        data.addDataMap("userId", userList.get(0));
 
     }
 
-    @Test(dependsOnMethods = {"searchUser"}, priority = 2)
-    public void verify_post() {
+    @Test(dependsOnMethods = {"search_and_verify_user"}, priority = 2)
+    public void verify_post_on_users_blog() {
 
-        Response response = new RestCaller().doGet(EndPoints.baseURI + EndPoints.posts);
-        postArry = response.as(PostsPOJO[].class);
+        Response response = new RestCaller().doGet(EndPoints.baseURI + EndPoints.posts, data.dataMap);
+        PostsPOJO[] postArry = response.as(PostsPOJO[].class);
         for (PostsPOJO post : postArry) {
-            if (post.getUserId() == (Integer) user.get("userId")) {
-                postId.add(post.getId());
+            if (post.getUserId() == (Integer) data.getDataMap("userId")) {
+                data.addDataList((post.getId()));
             }
         }
 
-        Assert.assertTrue(postArry.length != 0);
+        Assert.assertTrue(postArry.length != 0, "No Post found for UserId " + data.getDataMap("userId"));
         Assert.assertEquals(response.statusCode(), 200);
 
     }
 
-    @Test(dependsOnMethods = {"verify_post"}, priority = 3)
-    public void verify_email_in_comments() throws Exception {
+    @Test(dependsOnMethods = {"verify_post_on_users_blog"}, priority = 3)
+    public void verify_email_in_comments() {
 
-        Response response = new RestCaller().doGet(EndPoints.baseURI + EndPoints.comments);
-        CommentArry = response.as(CommentsPOJO[].class);
+        for (Object postid : data.dataList) {
+            Response response = new RestCaller().doGet(EndPoints.baseURI + EndPoints.comments, Map.of("postId", postid));
+            CommentsPOJO[] CommentArry = response.as(CommentsPOJO[].class);
+            Assert.assertTrue(CommentArry.length != 0, "No Commments found for postId " + postid);
 
-        for (CommentsPOJO post : CommentArry) {
-            if (postId.contains(post.getPostId())) {
-                if (EmailValidator.getInstance().isValid(post.getEmail())) {
-                    System.out.println("Email valid : " + post.getEmail());
-                } else {
-                    throw new Exception("Invalid email found !!!");
-                }
+            for (CommentsPOJO post : CommentArry) {
+                Assert.assertTrue(Util.validateEmail(post.getEmail()), "Invalid email found: " + post.getEmail());
             }
         }
-
-
     }
-
 }
