@@ -1,4 +1,4 @@
-package com.freenow.test;
+package com.freenow.DataContainer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -6,10 +6,10 @@ import java.util.List;
 
 public class LocalDataContainer {
 
-    HashMap<String, Object> dataMap;
-    List<Object> dataList;
+    public HashMap<String, Object> dataMap;
+    public List<Object> dataList;
 
-    LocalDataContainer(){
+    public LocalDataContainer(){
         dataMap = new HashMap<>();
         dataList = new ArrayList<>();
     }
