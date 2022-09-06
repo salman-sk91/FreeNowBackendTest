@@ -3,6 +3,10 @@
 
 <suite name="User Blog API Test Suite" verbose="2">
 
+    <listeners>
+        <listener class-name="com.freenow.framework.Base.CustomReporter"></listener>
+    </listeners>
+
     <test name="Blog Comments Test">
         <classes>
             <class name="com.freenow.test.CommentsTest"/>
