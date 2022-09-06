@@ -19,6 +19,9 @@ Easy to add a test scenario, ease of maintaining the test data and test scripts.
 The framework has custom reporting for additional details on the test execution.
 Having TestNg's default test reporting to view the details/results of test execution.
 
+For any commits made to **master** branch the Automated tests are Build and run on Circle Ci <br>
+Circleci url : https://app.circleci.com/pipelines/github/salman-sk91
+
 ****************************************************************************
 
 ## Flows automated as part of the project are as follows -
