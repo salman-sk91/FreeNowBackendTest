@@ -10,7 +10,7 @@ available at https://jsonplaceholder.typicode.com/
 
 ## How the Framework works?
 
-Its a Modular Test Driven Framework, all the test scenarios use **@Test** annotation of **TestNG** in their respective Test files.<br>
+Its a Modular Test Driven Framework, all the test scenarios use **@Test** annotation of **TestNG** <br> in their respective Test files.<br>
 The test data is stored in a separate **testConfig.properties** file.<br>
 The Response can be parsed using **Json Path** and also using individual **response POJO class**.<br> 
 Provided separate **DataContainer class** for individual test class file to store data used during test script execution. There is no test data dependency between test files.<br>
