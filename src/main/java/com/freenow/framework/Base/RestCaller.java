@@ -12,12 +12,12 @@ public class RestCaller {
     public Response doGet(String URI, Map<String,Object> params) {
         Response response;
         if(params!=null) {
-             response = given().header("Content-Type", "application/json").
+             response = given().header("Content-Type", "application/json").relaxedHTTPSValidation().
                     queryParams(params).
                     when().get(URI).
                     then().extract().response();
         }else {
-             response = given().header("Content-Type", "application/json").
+             response = given().header("Content-Type", "application/json").relaxedHTTPSValidation().
                     when().get(URI).
                     then().extract().response();
         }
