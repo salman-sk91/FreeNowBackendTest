@@ -66,7 +66,7 @@ public class CommentsTest extends BaseAPI {
         Log.info("Verified email on comments");
     }
 
-    @Test
+    @Test(enabled = false)
     public void verifyLocalAPI(){
         Log.info("Verifying local rest Service on circle ci");
         Response response = new RestCaller().doGet("http://localhost/icon/models/plan/786/subplan/1",null);
