@@ -69,7 +69,7 @@ public class CommentsTest extends BaseAPI {
     @Test()
     public void verifyLocalAPI(){
         Log.info("Verifying local rest Service on circle ci");
-        Response response = new RestCaller().doGet("http://192.168.1.3:8090/icon/models/plan/786/subplan/2",null);
+        Response response = new RestCaller().doGet("http://192.168.1.3:8090/icon/models/plan/786/subplan/1",null);
         Log.info(response.asPrettyString());
         Assert.assertEquals(200,response.statusCode());
     }
